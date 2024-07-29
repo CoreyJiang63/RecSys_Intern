@@ -260,10 +260,31 @@
   - 大规模工业级稀疏数据
 
 ## WideDeep
-Already discussed previously in EasyRec
+Previously discussed 
 
 ## DSSM
 - 双塔召回
 - Previously discussed 
+- Pipeline:
+  - 投影（高->低维）
+  - MLP
+  - 余弦相似，softmax
+- Metric
+  - NDCG@{1, 3, 10}
 
-fuckinghell
+## PNN
+### Overview
+- [Product-based neural networks for user response prediction](https://recbole.io/docs/user_guide/model/context/pnn.html)
+- 用乘积层来捕捉字段之间的交互模式
+  - Inner product
+  - Outer product
+  
+### Dataset
+- Criteo
+- iPinYou
+- Metric
+  - AUC
+  - RIG (Relative Information Gain)
+  - Log Loss
+  - RMSE
+- 适用数据：多字段，categorical，高维one-hot特征
