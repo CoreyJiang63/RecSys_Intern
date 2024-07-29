@@ -288,3 +288,28 @@ Previously discussed
   - Log Loss
   - RMSE
 - 适用数据：多字段，categorical，高维one-hot特征
+
+## FNN
+### Overview
+- [Deep Learning over Multi-field Categorical Data](https://recbole.io/docs/user_guide/model/context/fnn.html)
+- 最简单的raw MLP
+- FM的objective
+### Dataset
+- iPinYou
+- Metric
+  - AUC
+- 适用数据：广告
+
+## FwFM
+### Overview
+- [Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising](https://recbole.io/docs/user_guide/model/context/fwfm.html)
+![](assets/fwfm.png)
+- 就是在FM基础上多加了一个field之间的weight，"field-weighted"
+
+### Dataset
+- Criteo
+- Oath
+  - 两周广告点击日志
+- Metric
+  - AUC
+- 适用数据：same
