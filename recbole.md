@@ -332,3 +332,47 @@ Previously discussed
 ### Overview
 - [Attentional Factorization Machines: Learning the Weight of Feature Interactions via Attention Networks](https://recbole.io/docs/user_guide/model/context/afm.html)
 - 用attention学习各feature interaction的重要性
+
+### Dataset
+- Frappe
+- MovieLens
+- Metric
+  - RMSE
+
+
+## DeepFM
+### Overview
+- [DeepFM: A Factorization-Machine based Neural Network for CTR Prediction](https://recbole.io/docs/user_guide/model/context/deepfm.html)
+- DNN + FM（简单加和再过sigmoid）
+
+### Dataset
+- Criteo
+- Company∗
+  - App Store游戏中心，连续7天的用户点击记录
+- Metric
+  - AUC
+  - Logloss
+- 适用数据：高维稀疏，CTR
+
+
+## xDeepFM
+### Overview
+- [eXtreme Deep Factorization Machine, Combining Explicit and Implicit Feature Interactions for Recommender Systems](https://recbole.io/docs/user_guide/model/context/xdeepfm.html)
+- 显式生成特征交互
+- CIN:
+  - 每一层隐藏层的输出依赖上层和额外输入，类似RNN
+  - 滤波器沿embedding维度滑动，生成特征图，类似CNN
+  ![](assets/cin.jpg)
+- CIN + Deep: xDeepFM
+  - 想法和DeepFM，Wide&Deep非常类似
+
+### Dataset
+- Criteo
+- Dianping
+- Bing News
+- Metric
+  - AUC
+  - Logloss
+- 适用数据：
+  - numerical & categorical混合
+  - 缺乏明确时空上的相关性
