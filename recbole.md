@@ -300,11 +300,25 @@ Previously discussed
   - AUC
 - 适用数据：广告
 
+## FFM
+### Overview
+- [Field-aware Factorization Machines for CTR Prediction](https://recbole.io/docs/user_guide/model/context/ffm.html)
+![](assets/ffm.png)
+- 在传统FM基础上，不是直接学习feature间pairwise的权重，而是学字段间权重
+
+### Dataset
+- Criteo
+- Avazu
+- Metric
+  - logloss
+- 适用数据：
+  - 只适合分类特征，并可转换为binary特征的数据
+
 ## FwFM
 ### Overview
 - [Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising](https://recbole.io/docs/user_guide/model/context/fwfm.html)
 ![](assets/fwfm.png)
-- 就是在FM基础上多加了一个field之间的weight，"field-weighted"
+- 就是在FFM基础上多加了一个field之间的weight，"field-weighted"
 
 ### Dataset
 - Criteo
@@ -312,4 +326,9 @@ Previously discussed
   - 两周广告点击日志
 - Metric
   - AUC
-- 适用数据：same
+- 适用数据：多字段分类数据
+
+## AFM
+### Overview
+- [Attentional Factorization Machines: Learning the Weight of Feature Interactions via Attention Networks](https://recbole.io/docs/user_guide/model/context/afm.html)
+- 用attention学习各feature interaction的重要性
