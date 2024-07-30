@@ -300,6 +300,7 @@ Previously discussed
   - AUC
 - 适用数据：广告
 
+以下为FM系的模型：
 ## FFM
 ### Overview
 - [Field-aware Factorization Machines for CTR Prediction](https://recbole.io/docs/user_guide/model/context/ffm.html)
@@ -376,3 +377,16 @@ Previously discussed
 - 适用数据：
   - numerical & categorical混合
   - 缺乏明确时空上的相关性
+
+## NFM
+### Overview
+- [Neural Factorization Machines for Sparse Predictive Analytics](https://recbole.io/docs/user_guide/model/context/nfm.html)
+- 显式捕捉bi-interaction（二阶交互）->再过多层FFN
+
+### Dataset
+- Frappe
+  - app用户日志
+- MovieLens
+- Metric
+  - RMSE
+- 适用数据：稀疏特征，categorical
