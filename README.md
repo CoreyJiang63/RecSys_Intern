@@ -1,3 +1,3 @@
-## Recommendation System Literature research @ Datatist
+## RecSys Literature research @ Datatist
 - EasyRec
 - RecBole
