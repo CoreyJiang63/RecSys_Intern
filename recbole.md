@@ -426,3 +426,78 @@ Previously discussed
 ### Overview
 - [Improving Graph Collaborative Filtering with Neighborhood-enriched Contrastive Learning](https://recbole.io/docs/user_guide/model/general/ncl.html)
 - A+B: Graph CF + CL
+  - 将结构和语义邻居纳入图协同过滤，做对比学习
+- GNN:
+  - 归一化聚合，BPR loss（pairwise）
+- 和邻居做CL
+  - Structural：所有邻居平等对待
+  - Semantic：仅考虑聚类之后在同prototype之下的邻居
+
+### Dataset
+- MovieLens1M
+- Yelp
+- Amazon Books
+- Gowalla
+- Alibaba-iFashion
+- Metric
+  - Recall@N
+  - NDCG@N
+  - N = 10, 20, 50
+- 适用数据：隐式反馈，sparse，nothing specific
+
+## SimpleX
+### Overview
+- 关注点：loss function & 负采样比例
+  - **简单**鲁棒的baseline
+- CCL
+  - cosine contrastive loss
+  ![](assets/simplex.jpg) 
+  - m: margin; 正样本 + neg sample
+- 基本pipeline：
+  - 所有交互的items做aggregation
+    - avg
+    - attn
+  - 聚合的item embed和user embed加权加和
+  - 和candidate item余弦相似，最后计算出CCL
+
+### Dataset
+- Amazon-Books
+- Yelp18
+- Gowalla
+- further test:
+  - Amazon-CDs, Amazon-Movies, Amazon-Beauty
+  - CiteUlikeA, Movielens-1M
+- Metric
+  - Recall@20
+  - NDCG@20
+  - wide range of comparison
+- 适用数据：
+  - large-scale
+  - 计算资源有限场景
+
+
+## NCEPLRec
+### Overview
+- [Noise Contrastive Estimation for One-Class Collaborative Filtering](https://recbole.io/docs/user_guide/model/general/nceplrec.html)
+- 解决问题：总是推荐popular items，缺乏个性化推荐
+- NCE: Noise Contrastive Estimation
+  - 平衡observed & unobserved
+- NS-AutoRec
+  - 通过负采样训练嵌入层
+  - 仅考虑重构error，NS作正则项
+- NCE-AutoRec
+  - unobserved interaction的预测期望用负采样期望近似
+  ![](assets/nce.jpg)
+
+### Dataset
+- Goodbooks
+- MovieLens-20M
+- Netflix
+- Yahoo
+- Metric
+  - R-Precision, NDCG, MAP@K,
+Precison@K, Recall@K and F1-score@K
+- 适用数据：
+  - large-scale, real-life
+  - implicit feedback
+  - 用户偏好多样化
