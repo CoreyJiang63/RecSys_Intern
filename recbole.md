@@ -390,3 +390,39 @@ Previously discussed
 - Metric
   - RMSE
 - 适用数据：稀疏特征，categorical
+
+
+# Genearal Recommendation
+## DiffRec
+### Overview
+- [Diffusion Recommender Model](https://recbole.io/docs/user_guide/model/general/ldiffrec.html)
+![](assets/diffrec.png)
+- 逐步用高斯噪声腐蚀用户交互历史，然后迭代恢复原始交互
+  - 前向过程显著降低噪声尺度，保留用户个性化信息
+- Inference: 用重构后的$\hat{x_0}$分布计算probability，推荐排名靠前的商品
+- 两个扩展：
+  - L-DiffRec
+    - 用k-means对物品进行聚类，压缩维度
+  ![](assets/ldiffrec.png)
+  - T-DiffRec
+    - time-aware reweighting
+    - 时序靠后的交互赋予更大权重
+- 有点类似data augmentation？
+
+### Dataset
+- Amazon-book
+- Yelp
+- ML-1M
+- Metric
+  - Recall@k
+  - NDCG@k
+  - k=10, 20
+- 适用数据：
+  - 高噪声用户交互
+  - large-scale
+  - 用户偏好随时间变化
+
+## NCL
+### Overview
+- [Improving Graph Collaborative Filtering with Neighborhood-enriched Contrastive Learning](https://recbole.io/docs/user_guide/model/general/ncl.html)
+- A+B: Graph CF + CL
