@@ -501,3 +501,100 @@ Precison@K, Recall@K and F1-score@K
   - large-scale, real-life
   - implicit feedback
   - 用户偏好多样化
+
+
+## ADMMSLIM
+### Overview
+- [Sparse Recommendations for Many Users](https://recbole.io/docs/user_guide/model/general/admmslim.html)
+- by Netflix
+- 优化原始Slim目标函数，训练时间与用户数无关，可扩展到大规模用户群体
+![](assets/slim.jpg)
+- $B$涉及多个函数和约束，重新定义为等效优化问题，前两项$f(B)$，最后一项$g(C)$, s.t. $B=C$
+- 这个constraint用拉格朗日乘数约束，然后这个优化用类似ALS的方法交替更新$B$和$C$（有闭式解）
+  ![](assets/admm.jpg)
+- 可调整各约束和正则项修改目标函数，灵活，提供ablation
+- 优点：转化为优化问题，收敛快，scalability
+
+### Dataset
+- ML-20M
+- Netflix Prize
+- Million Song Data(MSD)
+- Metric
+  - Recall@20
+  - Recall@50
+  - NDCG@100
+- 适用数据：
+  - 大量用户
+  - 冷启动
+  - catalog size > # user
+
+
+## SGL
+### Overview
+- [Self-supervised Graph Learning for Recommendation](https://recbole.io/docs/user_guide/model/general/sgl.html)
+- 解决问题：
+  - 监督信号稀疏
+  - 数据分布偏向高度节点
+  - prone to noise
+- 数据增强方法：
+  - 节点dropout
+  - 边dropout
+  - random walk
+- CL: 最大化同一节点不同视图间的一致性
+- MTL: 总loss = cross-entropy + CL loss + regularizatoin
+
+### Dataset
+- Yelp2018
+- Amazon-Book
+- Alibaba-iFashion
+- Metric
+  - Recall@20
+  - NDCG@20
+- 适用数据：
+  - 数据分布biased
+  - observed interaction高噪
+
+
+## SLIMElastic
+### Overview
+Refer to [ADMMSLIM](#admmslim)
+### Dataset
+- 购买交易记录
+  - ccard
+  - ctlg2
+  - ctlg3
+  - ecmrc
+- 评分数据
+  - BX
+  - ML10M
+  - Netflix
+  - Yahoo
+- Metric
+  - HR
+  - ARHR
+    - 对每个用户命中以位置倒数加权：
+    $\frac{1}{\#users}\sum_{i\in hit} \frac{1}{p_i}$
+- 适用数据：purchase, rating
+
+
+### EASE
+### Overview
+- 在[SLIM](#admmslim)基础上，drop掉非负约束和L1正则
+- 同样提供闭式解（形式简单），方法和ADMMSLIM略有不同
+![](assets/closed_form.jpg) ![](assets/p_hat.jpg)
+
+### Dataset
+- ML-20M
+- Netfix Prize
+- Million Song Data (MSD)
+- Metric
+  - Recall@{20, 50}
+  - NDCG@100
+- 适用数据：
+  - 个性化相关性高，更好推荐长尾item
+  - sparse, implicit, etc.
+  
+
+## RecVAE
+### Overview
+- 把传统VAE的高斯分布改为多项式分布
