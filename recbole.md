@@ -62,7 +62,7 @@
 - 标签平滑假设：使用标签平滑正则化，确保知识图谱中相邻item有相似的用户相关性label
   - 相当于图上的标签传播
   - 把某一item看作unlabeled
-    - 用其他所有实体信息predict出一个label.
+    - 用其他所有实体信息predict出一个label
     - 在与实际label做cross entropy作为正则项
 
 ### Dataset
@@ -447,6 +447,7 @@ Previously discussed
 
 ## SimpleX
 ### Overview
+- [A Simple and Strong Baseline for Collaborative Filtering](https://recbole.io/docs/user_guide/model/general/simplex.html)
 - 关注点：loss function & 负采样比例
   - **简单**鲁棒的baseline
 - CCL
@@ -557,7 +558,8 @@ Precison@K, Recall@K and F1-score@K
 
 ## SLIMElastic
 ### Overview
-Refer to [ADMMSLIM](#admmslim)
+- [Sparse Linear Methods for Top-N Recommender Systems](https://recbole.io/docs/user_guide/model/general/slimelastic.html)
+- Refer to [ADMMSLIM](#admmslim)
 ### Dataset
 - 购买交易记录
   - ccard
@@ -579,6 +581,7 @@ Refer to [ADMMSLIM](#admmslim)
 
 ### EASE
 ### Overview
+- [Embarrassingly Shallow Autoencoders for Sparse Data](https://recbole.io/docs/user_guide/model/general/ease.html)
 - 在[SLIM](#admmslim)基础上，drop掉非负约束和L1正则
 - 同样提供闭式解（形式简单），方法和ADMMSLIM略有不同
 ![](assets/closed_form.jpg) ![](assets/p_hat.jpg)
@@ -597,4 +600,66 @@ Refer to [ADMMSLIM](#admmslim)
 
 ## RecVAE
 ### Overview
+- [A New Variational Autoencoder for Top-N Recommendations with Implicit Feedback](https://recbole.io/docs/user_guide/model/general/recvae.html)
+- Auto Encoder Paradigm
+![](assets/recvae.png)
 - 把传统VAE的高斯分布改为多项式分布
+![](assets/recvae_loss.jpg)
+- 把原始的ELBO改为去噪VAE的形式（体现在期望上）
+- 复合先验：标准高斯与上一epoch后验近似（$q_\phi(z\mid x)$）的weighted sum
+![](assets/prior.jpg)
+- 超参$\beta$不再是$\beta$-VAE中的常数，而是与当前用户interaction数量成正比（体现在$\beta'(x)$）
+- 类似ALS，user和item embedding交替进行
+
+### Dataset
+- MovieLens-20M
+- Netflix Prize
+- Million Songs
+- Metric
+  - Recall@{20, 50}
+  - NDCG@100
+- 适用数据：
+  - 电商，内容推荐等隐式反馈场景
+  - 处理稀疏，噪声
+
+
+## RaCT
+### Overview
+- [Towards Amortized Ranking-Critical Training for Collaborative Filtering](https://recbole.io/docs/user_guide/model/general/ract.html)
+- 借鉴RL中Actor-Critic（玩家-评委）的想法
+  - Critic：近似排名指标
+  - Actor：针对指标优化
+- 训练方法：
+  - 用MLE预训练actor网络，standard in VAE
+    - $\mathbb{E}_{q_{\phi}(z\mid x)} \log p_\theta(x\mid z)$
+  - 预训练critic网络，最小化MSE（w/ groud truth）
+- 类似GAN，actor as G, critic as D
+
+### Dataset
+- ML-20M
+- Netflix
+- MSD
+- Metric
+  - R@20
+  - R@50
+  - NDCG@100
+- 适用数据：implicit, large-scale, sparse
+
+
+## NNCF
+### Overview
+- [A Neural Collaborative Filtering Model with Interaction-based Neighborhood](https://recbole.io/docs/user_guide/model/general/nncf.html)
+![](assets/nncf.png)
+- 增强局部信息利用
+- 编码领域信息：
+  - 在邻居隐向量上卷积再Max-pooling
+- 全局和局部隐向量concat在一起，再过MLP
+- 想法非常trivial
+
+### Dataset
+- Delicious
+  - 社交书签网络服务
+- MovieLens
+- Rossmann
+  - 药店销售记录，kaggle competition
+- 适用数据：implicit, sparse, same with traditional CF
