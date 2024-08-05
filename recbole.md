@@ -667,6 +667,7 @@ Precison@K, Recall@K and F1-score@K
 
 ## ENMF
 ### Overview
+- [Efficient Neural Matrix Factorization without Sampling for Recommendation](https://recbole.io/docs/user_guide/model/general/enmf.html)
 - 负采样不够鲁棒，不易优化
 - 从整个训练数据学习神经模型，w/o sampling
 - 提出三个优化techniques：
@@ -693,5 +694,78 @@ Precison@K, Recall@K and F1-score@K
   - NDCG
 - 适用数据：large-scale, implicit
 
-
+以下为VAE/DAE系的模型：
 ## CDAE
+### Overview
+- [Collaborative Denoising Auto-Encoders for Top-N Recommender Systems](https://recbole.io/docs/user_guide/model/general/cdae.html)
+![](assets/cdae.png)
+- 自编码器框架，从被污染的输入学习
+  - 单隐藏层
+  - input -> latent -> reconstruction
+
+### Dataset
+- MovieLens-10M
+- Netflix
+- Yelp
+- Metric
+  - MAP@{1, 5, 10}
+- 适用数据：implicit, also corrupted data (nature of **denoising**)
+
+
+## MacridVAE
+### Overview
+- [Learning Disentangled Representations for Recommendation](https://recbole.io/docs/user_guide/model/general/macridvae.html)
+![](assets/macridvae.png)
+- 宏观分离（macro disentanglement） & 微观分离（micro  disentanglement）
+  - Macro: 捕获对高层次概念的偏好（e.g. 类别）
+    - latent $\mathbf{z}_u\in \mathbb{R}^{Kd}$, K:高层次概念数量
+    - 同时推理独热向量$\mathbf{C}$，聚类item
+    - 用VAE paradigm做推理
+  - Micro: 独立的低层次因素（e.g. 大小，颜色）
+    - 鼓励维度间的独立性
+    - 做法：ELBO中KL散度写成互信息形式去噪，并采用β-VAE to force independence (set β high)
+
+### Dataset
+- Netflix Prize
+- Movielens
+  - ML-100k
+  - ML-1M
+  - ML-20M
+- AliShop-7C
+  - 7C: 7 categories
+- Metric
+  - NDCG@100
+  - Recall@20
+  - Recall@50
+- 适用数据：user behavior, u-i interaction
+
+
+## MultiVAE & MultiDAE
+### Overview
+- [Variational Autoencoders for Collaborative Filtering](https://recbole.io/docs/user_guide/model/general/multidae.html)
+- VAE4Rec的鼻祖
+- 用多项式似然$\mathbf{x}_u \mid \mathbf{z}_u \sim Mult(N_u, MLP(\mathbf{z}_u))$
+- Taxonomy：
+  - DAE: delta变分分布（仅在$g_\phi(\mathbf{x}_u)$处有概率密度）
+  - VAE: 参数化高斯近似
+![](assets/multidae.png)
+
+
+### Dataset
+- ML-20M
+- Netflix
+- MSD
+- Metric
+  - Recall@20
+  - Recall@50
+  - NDCG@100
+- 适用数据：implicit, large, sparse, high-dim
+
+
+## LINE
+### Overview
+- [Large-scale Information Network Embedding](https://recbole.io/docs/user_guide/model/general/line.html)
+- designed to：大型信息网络嵌入低维向量空间
+- 优化目标函数同时保留全局&局部结构
+  - 一阶近邻（local） & 二阶近邻（global）
+    - 二阶：建模由上下文节点生成某一节点的概率（softmax）
