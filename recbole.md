@@ -663,3 +663,35 @@ Precison@K, Recall@K and F1-score@K
 - Rossmann
   - 药店销售记录，kaggle competition
 - 适用数据：implicit, sparse, same with traditional CF
+
+
+## ENMF
+### Overview
+- 负采样不够鲁棒，不易优化
+- 从整个训练数据学习神经模型，w/o sampling
+- 提出三个优化techniques：
+  - User-based optimization method (ENMF-U)
+    - weighted regression loss
+    - user batch（横向）
+    ![](assets/user_batch.jpg)
+    - 把loss分为正数据损失$\mathcal{L}_1^P(\Theta)$ & 所有数据损失$\mathcal{L}_1^A(\Theta)$
+    - 优化：nested sum的重排
+    ![](assets/nested_sum.jpg)
+  - Item-based optimization method (ENMF-I)
+    - item batch（纵向）
+    ![](assets/item_batch.jpg)
+  - Alternating-based optimization method (ENMF-A)
+    - motivated by ALS，交替优化user和item
+
+### Dataset
+- Ciao
+  - 购物评分
+- Epinions
+- Movielens
+- Metric
+  - HR
+  - NDCG
+- 适用数据：large-scale, implicit
+
+
+## CDAE
