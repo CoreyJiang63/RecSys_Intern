@@ -10,7 +10,7 @@
 - 适用数据：sparse, interaction + attribute data
 
 
-以下是几个比较老的模型：
+<u>*以下是几个比较老的模型：*</u>
 ## MKR
 ### Overview
 - [Multi-Task Feature Learning for Knowledge Graph Enhanced Recommendation](https://recbole.io/docs/user_guide/model/knowledge/mkr.html)
@@ -300,7 +300,7 @@ Previously discussed
   - AUC
 - 适用数据：广告
 
-以下为FM系的模型：
+<u>*以下为FM系的模型：*</u>
 ## FFM
 ### Overview
 - [Field-aware Factorization Machines for CTR Prediction](https://recbole.io/docs/user_guide/model/context/ffm.html)
@@ -694,7 +694,7 @@ Precison@K, Recall@K and F1-score@K
   - NDCG
 - 适用数据：large-scale, implicit
 
-以下为VAE/DAE系的模型：
+<u>*以下为VAE/DAE系的模型：*</u>
 ## CDAE
 ### Overview
 - [Collaborative Denoising Auto-Encoders for Top-N Recommender Systems](https://recbole.io/docs/user_guide/model/general/cdae.html)
@@ -765,7 +765,103 @@ Precison@K, Recall@K and F1-score@K
 ## LINE
 ### Overview
 - [Large-scale Information Network Embedding](https://recbole.io/docs/user_guide/model/general/line.html)
-- designed to：大型信息网络嵌入低维向量空间
+- designed to：大型信息网络嵌入低维空间
 - 优化目标函数同时保留全局&局部结构
   - 一阶近邻（local） & 二阶近邻（global）
-    - 二阶：建模由上下文节点生成某一节点的概率（softmax）
+    - 一阶：两节点联合概率，sigmoid（observed）
+    - 二阶：建模由上下文节点生成另一节点的条件概率，softmax（unobserved）
+    ![](assets/second_order.jpg)
+- 负采样方法：unigram分布（$P_n(v) \propto d_v^{\frac{3}{4}}$，out degree）
+- 图学习方法可以应用到推荐系统（observed/unobserved模式），把图看作interaction关系即可
+
+### Dataset
+- 论文中使用数据为各种网络数据，e.g. 语言网络（维基百科），社交网络（flicker, youtube），引用网络（DBLP）
+- 适用数据：interaction, implicit即可
+
+<u>*以下为一些graph-based模型：*</u>
+## DGCF
+### Overview
+- [Disentangled Graph Collaborative Filtering](https://recbole.io/docs/user_guide/model/general/dgcf.html)
+![](assets/dgcf.jpg)
+- 解决问题：uniform modeling无法有效捕捉用户意图的多样性
+- Could refer to [MacridVAE](#macridvae)
+- 基本Pipeline:
+  - K个latent intent，每个包含一组user/item分块的表示（$\mathbf{u}_k$，$\mathbf{i}_k$）
+  - 维护两组矩阵，交替更新
+  ![](assets/iterative_update.jpg)
+    - k intent下user表示
+      - aggregate所有该user相邻的item，weighted by (u,i) score $S_k(u,i)$
+    - k intent下的全局图表示
+      - update $S_k(u,i)$，$S$ += ($u^t$, $i^0$) attn score（i不更新，nonlinear activation）
+
+  - 正则项：鼓励latent factor间独立性，使用distance correlation
+
+### Dataset
+- Gowalla
+  - location-based check in
+- Yelp2018∗
+- Amazon-Book
+- Metric
+  - recall@20
+  - ndcg@20
+- 适用数据：多样化用户意图，其他相似
+
+
+## LightGCN
+### Overview
+- [Simplifying and Powering Graph Convolution Network for Recommendation](https://recbole.io/docs/user_guide/model/general/lightgcn.html)
+![](assets/lightgcn.png)
+- Light：仅包含GCN中领域聚合
+  - AGG: normalized sum（u & i）
+  - 各层组合：weighted sum
+  - inner product做预测
+- BPR loss
+
+### Dataset
+- Gowalla
+- Yelp2018
+- Amazon-Book
+- Metric
+  - recall@20
+  - ndcg@20
+- 适用数据：轻量，长期依赖，其他同
+
+## NGCF
+### Overview
+- [Neural Graph Collaborative Filtering](https://recbole.io/docs/user_guide/model/general/ngcf.html)
+![](assets/ngcf.jpg)
+- 和LightGCN相比：
+  - AGG时，包括self-connection（user2user自己的信息传递）
+  - activation: LeakyReLU
+- LightGCN claim这两处在消融中useless
+
+### Dataset
+Same as [LightGCN](#lightgcn)
+
+
+## GCMC
+### Overview
+- [Graph Convolutional Matrix Completion](https://recbole.io/docs/user_guide/model/general/gcmc.html)
+- Bipartite Graph(user -- item)
+  - 转化为link prediction任务
+- 仅考虑1-hop
+- 其他类似
+  - AGG: normalized sum
+  - Decoder: softmax
+  - both w/ trainable matrix added
+- loss: NLL (negative log likelihood)
+
+### Dataset
+- MovieLens(100K, 1M, 10M),
+- Flixster
+  - also movie rating
+- Douban
+- YahooMusic
+- Metric
+  - RMSE
+- 适用数据：解决冷启动，任何可以转化为二分图
+
+
+## SpectralCF
+### Overview
+- [Spectral collaborative filtering](https://recbole.io/docs/user_guide/model/general/spectralcf.html)
