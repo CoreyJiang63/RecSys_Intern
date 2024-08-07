@@ -865,3 +865,77 @@ Same as [LightGCN](#lightgcn)
 ## SpectralCF
 ### Overview
 - [Spectral collaborative filtering](https://recbole.io/docs/user_guide/model/general/spectralcf.html)
+![](assets/spectralcf.png)
+- 频谱卷积：动态放大/衰减各频率分量，捕捉连通性信息
+- 图傅里叶变换
+  - 拉普拉斯矩阵，eigenvector组成$U$
+  - $x$（图信号）--$U^T$--> $\hat{x}$（频域信号）--$U$--> 新图信号
+- 卷积核$g_\theta$ applied before $U$，调节频率分量
+  - 优化：卷积核用多项式近似，降低复杂度
+  - 节点表示拓展到C维，层数扩展到K层，各层结果concat
+  ![](assets/conv.jpg)
+- loss: BPR
+
+### Dataset
+- MovieLens-1M
+- HetRec
+  - extension of ML, also movie ratings, transformed into implicit
+- Amazon Instant Video
+- Metric
+  - Recall@M
+  - MAP@M
+  - M={20, 40, 60, 80, 100}
+- 适用数据：implicit, cold start
+
+<u>*以下是一些item-based算法：*</u>
+## NAIS
+### Overview
+- [Neural Attentive Item Similarity Model for Recommendation](https://recbole.io/docs/user_guide/model/general/nais.html)
+- item-to-item
+- softmax分母平滑化处理 ![](assets/smooth_softmax.jpg)
+- loss: cross-entropy
+
+### Dataset
+- MovieLens-1M
+- Pinterest
+- Metric
+  - HR@10
+  - NDCG@10 
+- 适用数据：item-based CF，不同长度的用户历史
+
+
+## FISM
+### Overview
+- [Factored Item Similarity Models for Top-N Recommender Systems](https://recbole.io/docs/user_guide/model/general/fism.html)
+- estimated score $\hat{r}_{ui}$: same as [NAIS](#nais)
+- FISMrmse
+  - 目标函数：squared error
+- FISMauc：BPR loss
+  
+### Dataset
+- ML100K
+- Netflix
+- Yahoo Music
+- Metric
+  - HR
+  - ARHR
+- 适用数据：sparse, implicit, scalable 
+
+
+## DMF
+### Overview
+- MLP分别编码user/item
+- loss: normalized cross-entropy
+  - divided by max(rating)，同时考虑explicit / implicit
+### Dataset
+- MovieLens 100K, 1M
+- Amazon Music, Movie
+- Metric
+  - NDCG@10
+  - HR@10
+- 适用数据：explicit & implicit unified
+
+## ConvNCF
+### Overview
+- [Outer Product-based Neural Collaborative Filtering](https://recbole.io/docs/user_guide/model/general/convncf.html)
+- one-hot feature -> embedding
