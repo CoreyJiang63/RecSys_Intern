@@ -980,3 +980,42 @@ Same as [LightGCN](#lightgcn)
 ### Overview
 - BPR-Opt通用优化架构
   - 可适用于：MF, adaptive kNN
+  - MF: $\hat{X} = WH^T$, $\Theta = W, H$
+  - kNN: $\hat{x}_{ui} = \sum_{k\in I_u^+ \backslash i} s_{ik}$, $\Theta = S$为cosine相似度矩阵
+- General objective: $\sum \log \sigma(\hat{x}_{uij}) - \lambda \|\Theta\|^2$
+  - $i\in I_u^+, j\in I_u^-$
+  - $\hat{x}_{uij} = \hat{x}_{ui} - \hat{x}_{uj}$, pairwise
+- 训练：随机选择三元组SGD
+
+### Dataset
+- Rossmann
+- Netflix
+- Metric
+  - AUC
+- 适用数据：any implicit
+
+## ItemKNN
+### Overview
+- [Item-based top-N recommendation algorithms](https://recbole.io/docs/user_guide/model/general/itemknn.html)
+- Similarity:
+  - cosine
+  - 条件概率：$\frac{\sum_{R_{q,j}>0} R_{q,j}}{Freq(i) Freq(j)^\alpha}$，每行normalized
+  - 可推广到set of items
+
+### Dataset
+- ctlg1,2,3
+  - 目录零售采购记录
+- ecmrc
+  - 电商网站
+- ccard
+  - 商场信用卡消费记录
+- Movies
+  - em
+    - EachMovie
+  - ml
+- skill
+  - 简历中IT技术
+- Metric
+  - HR@10
+  - ARHR@10
+- 适用数据：implicit
