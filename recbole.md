@@ -1,3 +1,4 @@
+# Recbole algorithm overview (continued)
 ## MCCLK
 ### Dataset
 - Book-Crossing
@@ -938,4 +939,44 @@ Same as [LightGCN](#lightgcn)
 ## ConvNCF
 ### Overview
 - [Outer Product-based Neural Collaborative Filtering](https://recbole.io/docs/user_guide/model/general/convncf.html)
-- one-hot feature -> embedding
+- one-hot feature -> embedding (w/ embed_size = K)
+- 使用外积构造interaction map
+  - $\mathbf{E} = \mathbf{p}_u\otimes \mathbf{q}_i = \mathbf{p}_u \mathbf{q}_i^T \in \mathbb{R}^{K\times K}$
+  - 编码维度间二阶correlation
+- CNN抓取interaction map中的重要信号
+  - 2×2局部信息，输出为所有维度correlation
+![](assets/convncf_cnn.jpg)
+- loss: BPR
+- prediction: $\hat{y}_{ui}$为最后一层输出reweighted
+
+### Dataset
+- Yelp
+  - Business rating
+- Gowalla
+  - check-in dataset
+- Metric
+  - NDCG@10
+  - HR@10
+- 适用数据：sparse, implicit
+
+
+## NeuMF
+### Overview
+- [Neural Collaborative Filtering](https://recbole.io/docs/user_guide/model/general/neumf.html)
+- GMF: $\phi = \mathbf{p}_u\odot \mathbf{q}_i$ (linearity)
+- MLP: non-linearity
+- 两者concat后过激活函数
+- loss: cross-entropy
+
+### Dataset
+- MovieLens 1M
+- Pinterest
+- Metric
+  - NDCG@10
+  - HR@10
+- 适用数据：same as [ConvNCF](#convncf)
+
+## BPR
+### Overview
+- BPR-Opt通用优化架构
+  - 可适用于：MF, adaptive kNN
