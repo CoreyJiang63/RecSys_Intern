@@ -1000,7 +1000,7 @@ Same as [LightGCN](#lightgcn)
 - [Item-based top-N recommendation algorithms](https://recbole.io/docs/user_guide/model/general/itemknn.html)
 - Similarity:
   - cosine
-  - 条件概率：$\frac{\sum_{R_{q,j}>0} R_{q,j}}{Freq(i) Freq(j)^\alpha}$，每行normalized
+  - 条件概率：$\frac{\sum_{R_{q,j}>0} R_{q,j}}{\text{Freq}(i) \text{Freq}(j)^\alpha}$，每行normalized
   - 可推广到set of items
 
 ### Dataset
@@ -1020,3 +1020,89 @@ Same as [LightGCN](#lightgcn)
   - HR@10
   - ARHR@10
 - 适用数据：implicit
+
+
+
+## Metrics Summary
+
+- **AUC** (Area Under the Curve): 
+  衡量模型区分类别的能力，是ROC曲线（真阳性率(TPR)-假阳性率(FPR)）的面积：
+
+  \[
+  \text{AUC} = \frac{1}{\text{Pos} \times \text{Neg}} \sum_{x_{\text{pos}}} \sum_{x_{\text{neg}}} I(f(x_{\text{pos}}) > f(x_{\text{neg}}))
+  \]  where \( I \) is the indicator function, \( f(x) \) is the prediction score, and \( x_{\text{pos}}, x_{\text{neg}} \) are the positive and negative samples.
+
+- **Accuracy**: 
+  正确预测的观察值与总观察值的比率：
+  \[
+  \text{Accuracy} = \frac{\text{TP} + \text{TN}}{\text{TP} + \text{TN} + \text{FP} + \text{FN}}
+  \]
+- **Precision**: 
+  识别为正中实际正确的比例：
+  \[
+  \text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}
+  \]
+
+- **Recall**: 
+  实际正样本被识别为正的比例：
+  \[
+  \text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}
+  \]
+
+- **F1-Score**: 
+  精确率和召回率的调和平均，提供两者间的平衡：
+  \[
+  \text{F1} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+  \]
+
+- **Logloss**: 
+  分类模型性能的指标，预测值为0-1间的概率：
+  \[
+  \text{Logloss} = -\frac{1}{N} \sum_{i=1}^{N} [y_i \log(p_i) + (1 - y_i) \log(1 - p_i)]
+  \] Also cross-entropy.
+
+- **RMSE** (Root Mean Square Error): 
+  模型预测值与观察值之间的差异：
+  \[
+  \text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2}
+  \]  where \( y_i \) is the observed value and \( \hat{y}_i \) is the predicted value.
+
+- **RIG** (Relative Information Gain): 
+  NE（Normalized Entropy）用平均熵标准化交叉熵：
+  \[\text{RIG} = 1 - \text{NE}\] and
+  \[
+  \begin{aligned}
+  \text{NE} &= -\frac{1}{N} \sum_{i=1}^{N} \left( \frac{1 + y_i}{2} \log(p_i) + \frac{1 - y_i}{2} \log(1 - p_i) \right) \\
+  & / \left( p \log(p) + (1 - p) \log(1 - p) \right)
+  \end{aligned}
+  \]  where $y_i\in \{-1, +1\}$, $p$ is the average empirical CTR of the training dataset.
+
+- **NDCG** (Normalized Discounted Cumulative Gain): 
+  衡量推荐的排名质量：
+  \[
+  \text{NDCG}@k = \frac{1}{\text{IDCG}_k} \sum_{i=1}^{k} \frac{2^{rel_i} - 1}{\log_2(i + 1)}
+  \] where \( rel_i \) is the relevance score of the item at position \( i \), and \( \text{IDCG}_k \) is the ideal DCG for the top \( k \) items.
+
+- **MAP** (Mean Average Precision): 
+  每个用户/query的平均精确率，取所有query的平均值：
+  \[
+  \text{MAP} = \frac{1}{|Q|} \sum_{q \in Q} \text{AP}(q)
+  \]   where \( AP(q) \) is the average precision for query \( q \), and \( |Q| \) is the number of queries.
+
+- **Recall@k**: 
+  前k个推荐中找到的相关item的比例：
+  \[
+  \text{Recall}@k = \frac{\text{Number of relevant items in top-}k}{\text{Total number of relevant items}}
+  \]
+
+- **Precision@k**: 
+  前k个推荐item中相关item的比例：
+  \[
+  \text{Precision}@k = \frac{\text{Number of relevant items in top-}k}{k}
+  \]
+
+
+- **F1-score@k**: 
+  \[
+  \text{F1}@k = 2 \times \frac{\text{Precision}@k \times \text{Recall}@k}{\text{Precision}@k + \text{Recall}@k}
+  \]
