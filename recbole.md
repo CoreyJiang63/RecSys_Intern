@@ -286,6 +286,7 @@ Previously discussed
 - Metric
   - AUC
   - RIG (Relative Information Gain)
+    - 1 - NE (Normalized Cross Entropy)
   - Log Loss
   - RMSE
 - 适用数据：多字段，categorical，高维one-hot特征
