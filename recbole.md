@@ -904,7 +904,7 @@
   - 图信号$x$经过$U^T$转换为频域信号$\hat{x}$，再经过$U$生成新图信号
 - 卷积核$g_\theta$用于在$U$之前相乘，调节频率分量
   - 优化：卷积核用多项式近似，降低复杂度
-  - 节点表示拓展到C维，层数扩展到K层，各层结果concatenate
+  - 节点表示拓展到C维，层数扩展到K层，各层结果连接
   ![](assets/conv.jpg)
 - 损失函数: BPR
 
@@ -942,8 +942,8 @@
 - 预测得分$\hat{r}_{ui}$: 与[NAIS](#nais)相同
 - 提供两种可选项：
   - FISMrmse
-    - 目标函数：平方误差
-  - FISMauc：BPR损失
+    - 目标函数：使用平方误差
+  - FISMauc：使用BPR损失
   
 ### 数据集
 - ML100K
@@ -957,6 +957,7 @@
 
 ## DMF
 ### 模型介绍
+- [Deep Matrix Factorization Models for Recommender Systems](https://recbole.io/docs/user_guide/model/general/dmf.html)
 - MLP分别编码user/item
 - 损失函数：归一化的交叉熵
   - 除以最大评分，这样同时囊括了显式和隐式的情境
@@ -973,33 +974,33 @@
 ### 模型介绍
 - [Outer Product-based Neural Collaborative Filtering](https://recbole.io/docs/user_guide/model/general/convncf.html)
 - 独热特征转化为embedding
-- 使用外积构造交互图（类似feature map）
+- 使用外积构造交互图（类似熟悉的feature map）
   - $\mathbf{E} = \mathbf{p}_u\otimes \mathbf{q}_i = \mathbf{p}_u \mathbf{q}_i^T \in \mathbb{R}^{K\times K}$
-  - 编码维度间二阶correlation
-- CNN抓取interaction map中的重要信号
-  - 2×2局部信息，输出为所有维度correlation
+  - 编码维度间二阶相关度
+- 使用CNN抓取交互图中的重要信号
+  - 抓取2×2局部信息，输出为所有维度的相关度
 ![](assets/convncf_cnn.jpg)
-- loss: BPR
-- prediction: $\hat{y}_{ui}$为最后一层输出reweighted
+- 损失函数: BPR损失
+- 预测方法: 最后一层输出重新加权后作为预测结果$\hat{y}_{ui}$
 
 ### 数据集
 - Yelp
-  - Business rating
+  - 商业评分
 - Gowalla
-  - check-in dataset
+  - 基于地点的打卡数据
 - Metric
   - NDCG@10
   - HR@10
-- 适用数据：sparse, implicit
+- 适用数据：稀疏，隐式即可
 
 
 ## NeuMF
 ### 模型介绍
 - [Neural Collaborative Filtering](https://recbole.io/docs/user_guide/model/general/neumf.html)
-- GMF: $\phi = \mathbf{p}_u\odot \mathbf{q}_i$ (linearity)
-- MLP: non-linearity
-- 两者concat后过激活函数
-- loss: cross-entropy
+- GMF： $\phi = \mathbf{p}_u\odot \mathbf{q}_i$，提供线性
+- MLP：提供非线性部分
+- 两者连接后过激活函数
+- 损失函数：交叉熵损失
 
 ### 数据集
 - MovieLens 1M
@@ -1007,33 +1008,37 @@
 - Metric
   - NDCG@10
   - HR@10
-- 适用数据：same as [ConvNCF](#convncf)
+- 适用数据：与[ConvNCF](#convncf)相同
 
 ## BPR
 ### 模型介绍
-- BPR-Opt通用优化架构
-  - 可适用于：MF, adaptive kNN
-  - MF: $\hat{X} = WH^T$, $\Theta = W, H$
-  - kNN: $\hat{x}_{ui} = \sum_{k\in I_u^+ \backslash i} s_{ik}$, $\Theta = S$为cosine相似度矩阵
-- General objective: $\sum \log \sigma(\hat{x}_{uij}) - \lambda \|\Theta\|^2$
-  - $i\in I_u^+, j\in I_u^-$
-  - $\hat{x}_{uij} = \hat{x}_{ui} - \hat{x}_{uj}$, pairwise
-- 训练：随机选择三元组SGD
+- 提出BPR-Opt：通用的优化架构，并不指定拆解矩阵的具体算法
+  - 核心：成对的结构
+  - 可适用于：矩阵分解，自适应kNN
+  - 矩阵分解： $\hat{\mathbf{X}} = \mathbf{W}\mathbf{H}^T$，因此对应的参数$\Theta = \mathbf{W}, \mathbf{H}$
+  - kNN: $\hat{x}_{ui} = \sum_{k\in I_u^+ \backslash i} s_{ik}$，对应的参数$\Theta = S$为余弦相似度矩阵
+- 统一的目标函数： $\sum \log \sigma(\hat{x}_{uij}) - \lambda \|\Theta\|^2$
+  - $i\in I_u^+, j\in I_u^-$（$i$对应正样本，$j$对应负样本）
+  - $\hat{x}_{uij} = \hat{x}_{ui} - \hat{x}_{uj}$，成对形式
+  - 想法：正样本的得分要比负样本高，所以去优化两者之差
+- 训练：随机选择三元组进行SGD
 
 ### 数据集
 - Rossmann
 - Netflix
 - Metric
   - AUC
-- 适用数据：any implicit
+- 适用数据：任何隐式交互即可
 
 ## ItemKNN
 ### 模型介绍
 - [Item-based top-N recommendation algorithms](https://recbole.io/docs/user_guide/model/general/itemknn.html)
-- Similarity:
-  - cosine
-  - 条件概率：$\frac{\sum_{R_{q,j}>0} R_{q,j}}{\text{Freq}(i) \text{Freq}(j)^\alpha}$，每行normalized
-  - 可推广到set of items
+- 两种相似度可选项：
+  - 使用余弦相似
+  - 使用基于条件概率的相似度：
+    - 想法：考虑购买了某一个商品（e.g. item i）之后再购买另一个商品（e.g. item j）的条件概率
+    - $\text{sim}(i, j) = \frac{\sum_{q: R_{q,j}>0} R_{q,j}}{\text{Freq}(i) \text{Freq}(j)^\alpha}$，每行进行归一化处理，同时给购买较少item的顾客赋予更高的权重进行平衡
+  - 可推广到一系列items
 
 ### 数据集
 - ctlg1,2,3
@@ -1047,20 +1052,24 @@
     - EachMovie
   - ml
 - skill
-  - 简历中IT技术
+  - 简历中出现的IT技术
 - Metric
   - HR@10
   - ARHR@10
-- 适用数据：implicit
+- 适用数据：隐式数据
 
 # 模型总结
 
-- 广泛使用的基础经典模型：
+- 经过广泛验证的基础经典模型：
   - [AutoInt](#autoint)
   - [DCN](#dcn)
   - [Wide & Deep](#widedeep)
   - [DeepFM](#deepfm)
   - [DSSM](#dssm)
+  - [DMF](#dmf)
+  - [NeuMF](#neumf)
+  - [BPR](#bpr)
+  - [ItemKNN](#itemknn)
   
 - 大厂开发的有实际使用场景的模型：
   - [Wide & Deep](#widedeep)：Google Play
@@ -1072,13 +1081,57 @@
   - [DSSM](#dssm)：微软
   - [ADMMSLIM](#admmslim)：网飞
 
+- 复杂度分析：
+  - 因子分解机类方法：<span style="color:yellow">中等</span>
+    - 矩阵分解的推广，可以抓取任何变量集合之间的相互作用
+    - 模型例子
+      - FM
+      - [AFM](#afm)
+      - [FFM](#ffm)
+      - [FwFM](#fwfm)
+  - 基于邻域的方法：<span style="color:fuchsia">较高</span>
+    - 这类方法需要将目标用户活item与其他同类元素比较
+    - 模型例子
+      - [ItemKNN](#itemknn)
+      - [NAIS](#nais)
+      - [FISM](#fism)
+  - 深度方法：<span style="color:red">高</span>
+    - 深度网络的多层结构使该类方法复杂度最高，并且也最为普遍
+    - 经典模型例子
+      - [DCN](#dcn)
+      - [Wide & Deep](#widedeep)
+      - [DeepFM](#deepfm)
+      - [DIEN](#dien)
+      - [DIN](#din)
+      - [xDeepFM](#xdeepfm)
+      - 以及各种序列建模
+      - etc.
+  - 基于知识图谱的方法：<span style="color:fuchsia">较高</span>
+    - 知识图谱方法取决于明确的外部领域知识（domain knowledge）
+    - 模型例子
+      - [MKR](#mkr)
+      - [KGCN](#kgcn)
+      - [KGNNLS](#kgnnls)
+  - 图学习方法：<span style="color:fuchsia">较高</span>
+    - 需要遍历图，因此取决于图节点/边的数量
+    - 模型例子
+      - [FiGNN](#fignn)
+      - [KD_DAGFM](#kd_dagfm)
+      - [LINE](#line)
+      - [DGCF](#dgcf)
+      - [NGCF](#ngcf)
+      - [LightGCN](#lightgcn)
+      - [GCMC](#gcmc)
+  - 基于内容的方法（Content-based）：<span style="color:green">较低</span>
+    - 从item和用户profile中提取特征，模型较为简单
+
 # 各类指标总结
 
 - **AUC** (Area Under the Curve): 
   衡量模型区分类别的能力，是ROC曲线（真阳性率(TPR)-假阳性率(FPR)）的面积：
   \[
   \text{AUC} = \frac{1}{\text{Pos} \times \text{Neg}} \sum_{x_{\text{pos}}} \sum_{x_{\text{neg}}} I(f(x_{\text{pos}}) > f(x_{\text{neg}}))
-  \]  where \( I \) is the indicator function, \( f(x) \) is the prediction score, and \( x_{\text{pos}}, x_{\text{neg}} \) are the positive and negative samples.
+  \]  \( I \)为指示函数，\( f(x) \)为预测得分，\( x_{\text{pos}}, x_{\text{neg}} \)分别为正负样本
 
 - **Accuracy**: 
   正确预测的观察值与总观察值的比率：
@@ -1107,13 +1160,13 @@
   分类模型性能的指标，预测值为0-1间的概率：
   \[
   \text{Logloss} = -\frac{1}{N} \sum_{i=1}^{N} [y_i \log(p_i) + (1 - y_i) \log(1 - p_i)]
-  \] Also cross-entropy.
+  \] 与交叉熵损失相同。
 
 - **RMSE** (Root Mean Square Error): 
   模型预测值与观察值之间的差异：
   \[
   \text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2}
-  \]  where \( y_i \) is the observed value and \( \hat{y}_i \) is the predicted value.
+  \]  \( y_i \)为观测值，\( \hat{y}_i \)为预测值。
 
 - **RIG** (Relative Information Gain): 
   NE（Normalized Entropy）用平均熵标准化交叉熵：
@@ -1123,19 +1176,19 @@
   \text{NE} &= -\frac{1}{N} \sum_{i=1}^{N} \left( \frac{1 + y_i}{2} \log(p_i) + \frac{1 - y_i}{2} \log(1 - p_i) \right) \\
   & / \left( p \log(p) + (1 - p) \log(1 - p) \right)
   \end{aligned}
-  \]  where $y_i\in \{-1, +1\}$, $p$ is the average empirical CTR of the training dataset.
+  \]  $y_i\in \{-1, +1\}$, $p$为训练集的平均经验点击率（CTR）。
 
 - **NDCG** (Normalized Discounted Cumulative Gain): 
   衡量推荐的排名质量：
   \[
   \text{NDCG}@k = \frac{1}{\text{IDCG}_k} \sum_{i=1}^{k} \frac{2^{rel_i} - 1}{\log_2(i + 1)}
-  \] where \( rel_i \) is the relevance score of the item at position \( i \), and \( \text{IDCG}_k \) is the ideal DCG for the top \( k \) items.
+  \] 其中\( rel_i \) 为位置\( i \)对应item的相关得分，\( \text{IDCG}_k \) 为前k个item的理想折损累计增益（DCG）。
 
 - **MAP** (Mean Average Precision): 
-  每个用户/query的平均精确率，取所有query的平均值：
+  每个用户或query的平均精确率，取所有query的平均值：
   \[
   \text{MAP} = \frac{1}{|Q|} \sum_{q \in Q} \text{AP}(q)
-  \]   where \( AP(q) \) is the average precision for query \( q \), and \( |Q| \) is the number of queries.
+  \]   其中\( \text{AP}(q) \)为query \( q \)的平均精度，\( |Q| \)为query的数量。
 
 - **Recall@k**: 
   前k个推荐中找到的相关item的比例：
