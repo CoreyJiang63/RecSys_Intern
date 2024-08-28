@@ -37,7 +37,7 @@
 ### 模型介绍
 - [Knowledge Graph Convolutional Networks for Recommender](https://recbole.io/docs/user_guide/model/knowledge/kgcn.html)
 - 基本流程：
-  - 聚合neighbor信息（各种aggregator，GNN）
+  - 聚合neighbor信息（各种聚合函数，GNN）
   - 建模高阶关系，多层跳跃（multiple-hop）
   - 定义得分机制计算概率，e.g. MLP, 内积
 
