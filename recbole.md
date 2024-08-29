@@ -37,7 +37,7 @@
 ### 模型介绍
 - [Knowledge Graph Convolutional Networks for Recommender](https://recbole.io/docs/user_guide/model/knowledge/kgcn.html)
 - 基本流程：
-  - 聚合neighbor信息（各种聚合函数，GNN）
+  - 聚合邻域信息（各种聚合函数，GNN）
   - 建模高阶关系，多层跳跃（multiple-hop）
   - 定义得分机制计算概率，e.g. MLP, 内积
 
@@ -65,10 +65,10 @@
     - 再与实际标签做交叉熵作为正则项
 
 ### 数据集
-- MovieLens-20M (movie)
-- Book-Crossing (book)
-- LastFM (music)
-- Dianping-Food (restaurant)
+- MovieLens-20M（电影）
+- Book-Crossing（书籍）
+- LastFM（音乐）
+- Dianping-Food（餐馆）
   - 大众点评数据
 - Metric
   - top-k: Recall@{2, 10, 50, 100}
@@ -108,8 +108,9 @@
 - 解决问题：现有方法简单拼接字段embedding
 - 多字段特征表示为图
   - 原始特征先过自注意力模块
-  - 随后接上传统GNN模块
-    - 包括：状态聚合 -> 状态更新（使用GRU，残差等建模序列信息）
+  - 随后接上传统GNN模块，主要包括：
+    - 状态聚合
+    - 状态更新（使用GRU，残差等建模序列信息）
 
 ### 数据集
 - Criteo
@@ -136,7 +137,7 @@
 ![](assets/dag_prop.png)
 - 改进模型：KD-DAGFM+
   - 用于蒸馏显式和隐式特征交互
-  - 最后加MLP
+  - 最后增加MLP
   - 教师模型（较为复杂）使用xDeepFM，DCNV2，AutoInt+，FiBiNet
 
 
@@ -194,7 +195,7 @@
 ### 模型介绍
 - 对DCN的工业级应用改进
 - 用低秩结构近似特征交叉，实现更好的性能和延迟的trade-off
-- 混合专家架构（MoE），把矩阵分解到多个子空间中，再用门控机制聚合
+- 使用混合专家架构（MoE），把矩阵分解到多个子空间中，再用门控机制聚合
 
 ### 数据集
 - Criteo
@@ -372,13 +373,13 @@
 ## DeepFM
 ### 模型介绍
 - [DeepFM: A Factorization-Machine based Neural Network for CTR Prediction](https://recbole.io/docs/user_guide/model/context/deepfm.html)
-- 使用两个模块：DNN以及FM
+- 使用两个模块：深度网络（DNN）以及因子分解机（FM）
   - 结合方式：简单加和再过sigmoid输出预测概率
 
 ### 数据集
 - Criteo
 - Company∗
-  - App Store游戏中心，连续7天的用户点击记录
+  - 应用商店游戏中心，连续7天的用户点击记录
 - Metric
   - AUC
   - Logloss
@@ -606,8 +607,7 @@
 - Metric
   - HR
   - ARHR
-    - 对每个用户命中以位置倒数加权：
-    $\frac{1}{\#users}\sum_{i\in hit} \frac{1}{p_i}$
+    - 对每个用户命中以位置倒数加权：$\frac{1}{\#users}\sum_{i\in hit} \frac{1}{p_i}$
 - 适用数据：购买数据，可以包含评分数据
 
 
@@ -843,8 +843,8 @@
 ### 模型介绍
 - [Simplifying and Powering Graph Convolution Network for Recommendation](https://recbole.io/docs/user_guide/model/general/lightgcn.html)
 ![](assets/lightgcn.png)
-- Light：仅包含GCN中领域聚合
-  - 聚合方法: 用户和item的归一化求和（u & i）
+- Light：仅包含[GCN](#ngcf)中领域聚合
+  - 聚合方法: 用户和item的归一化求和
   - 各层组合：加权加和
   - 预测：使用内积
 - 损失函数：BPR损失
@@ -997,7 +997,7 @@
 ## NeuMF
 ### 模型介绍
 - [Neural Collaborative Filtering](https://recbole.io/docs/user_guide/model/general/neumf.html)
-- GMF： $\phi = \mathbf{p}_u\odot \mathbf{q}_i$，提供线性
+- GMF：$\phi = \mathbf{p}_u\odot \mathbf{q}_i$，提供线性部分
 - MLP：提供非线性部分
 - 两者连接后过激活函数
 - 损失函数：交叉熵损失
@@ -1096,7 +1096,7 @@
       - [NAIS](#nais)
       - [FISM](#fism)
   - 深度方法：<span style="color:red">高</span>
-    - 深度网络的多层结构使该类方法复杂度最高，并且也最为普遍
+    - 一般来说，深度网络的多层结构使该类方法复杂度最高，并且也最为普遍
     - 经典模型例子
       - [DCN](#dcn)
       - [Wide & Deep](#widedeep)
