@@ -160,7 +160,7 @@
 ### 模型介绍
 - [Automatic Feature Interaction Learning via Self-Attentive Neural Networks](https://recbole.io/docs/user_guide/model/context/autoint.html)
 ![](assets/autoint.png)
-- Attention is all you need!
+- [Attention is all you need!](https://arxiv.org/pdf/1706.03762)
 - 把数值和分类特征映射到同一低维空间
 - 多头自注意力，残差连接
 
@@ -199,7 +199,7 @@
 
 ### 数据集
 - Criteo
-- MovieLen-1M
+- MovieLens-1M
 - Metric
   - Logloss
   - AUC
@@ -244,13 +244,13 @@
 - 两项优化技术:
   - 小批量正则化
     - 只计算每个mini-batch中出现的特征参数的L2范数
-  - 数据自适应的激活函数
+  - 数据自适应（data-adaptive）的激活函数
     - Dice
     - PReLU的推广
     - 根据输入数分布自适应调整整流点（均值）
   
 ### 数据集
-- Amazon(Electronics)
+- Amazon (Electronics)
 - MovieLens
 - Alibaba
 - Metric
@@ -286,7 +286,7 @@
 - Pipeline:
   - 由高维向低维投影
   - MLP
-  - 余弦相似，再过softmax计算得分
+  - 余弦相似，再通过softmax计算得分
 ### 数据集
 - 大规模真实世界数据集
   - 商业搜索引擎一年的查询日志文件
@@ -361,13 +361,14 @@
 - 用注意力机制学习各特征交互的重要性
 \[a_{ij} = \text{softmax}(\mathbf{h}^T \text{ReLU}\left( \mathbf{W} (\mathbf{v}_i \odot \mathbf{v}_j) x_i x_j + \mathbf{b} \right))\]
 
-\[\hat{y}_{AFM}(x) = \mathbf{w}_0 + \sum_{i=1}^d \mathbf{w}_i x_i + \mathbf{p}^T \sum_{i=1}^d\sum_{j=i+1}^d a_{ij} (\mathbf{v}_i\odot \mathbf{v}_j) x_i x_j\]
+\[\hat{y}_{\text{AFM}}(x) = \mathbf{w}_0 + \sum_{i=1}^d \mathbf{w}_i x_i + \mathbf{p}^T \sum_{i=1}^d\sum_{j=i+1}^d a_{ij} (\mathbf{v}_i\odot \mathbf{v}_j) x_i x_j\]
 
 ### 数据集
 - Frappe
 - MovieLens
 - Metric
   - RMSE
+- 适用数据：稀疏、分类数据，监督学习任务
 
 
 ## DeepFM
@@ -459,7 +460,7 @@
   - 将结构和语义邻居纳入图协同过滤，做对比学习
 - GNN:
   - 归一化聚合
-  - 损失函数使用BPR loss（两两间pairwise）
+  - 损失函数使用BPR损失（两两间pairwise）
 - 和节点的邻居做对比，提供两种选择：
   - 结构式（Structural）：将节点的所有邻居看做等价
   - 语义式（Semantic）：仅考虑聚类之后在同原型（prototype）之下的邻居
@@ -484,7 +485,7 @@
 - CCL (cosine contrastive loss)
   - 余弦对比损失：
   ![](assets/simplex.jpg) 
-  - m为边际值，相当于一个bias; 整个损失由正样本和负采样结果两部分组成
+  - m为边际值，相当于一个bias（偏置项）； 整个损失由正样本和负采样结果两部分组成
 - 基本流程：
   - 所有交互的items做聚合，可以有：
     - 平均聚合
@@ -517,7 +518,8 @@
   ![](assets/nce.jpg)
 - 两种可选项：
   - NS-AutoRec
-    - 通过负采样训练嵌入层
+    - NS: Negative Sampling
+    - 通过<u>负采样</u>训练嵌入层
     - 损失函数包含观测到的正值以及未被观测的负采样值，并用L1范数进行分布的平衡
   - NCE-AutoRec
     - 未被观测交互的预测期望用负采样期望来近似（见上文的NCE）
@@ -567,11 +569,11 @@
 ## ADMMSLIM
 ### 模型介绍
 - [Sparse Recommendations for Many Users](https://recbole.io/docs/user_guide/model/general/admmslim.html)
-- 由Netflix开发，比较偏数学
+- 由Netflix开发，该方法比较偏数学
 - 优化原始Slim目标函数：
 ![](assets/slim.jpg)
   - 训练时间与用户数无关，可扩展到大规模用户群体
-- $B$涉及多个函数和约束，重新定义为等效优化问题，前两项$f(B)$，最后一项$g(C)$, s.t. $B=C$
+- $B$涉及多个函数和约束，因此重新定义为等效优化问题，前两项$f(B)$，最后一项$g(C)$, s.t. $B=C$，希望$B$和$C$足够近，相当于KL散度的思想
 - 使用拉格朗日乘数约束，随后的优化用类似ALS的方法交替更新$B$和$C$（有闭式解）
   ![](assets/admm.jpg)
 - 可调整各约束和正则项修改目标函数，灵活，提供消融实验的便捷
@@ -607,14 +609,14 @@
 - Metric
   - HR
   - ARHR
-    - 对每个用户命中以位置倒数加权：$\frac{1}{\#users}\sum_{i\in hit} \frac{1}{p_i}$
+    - 对每个用户命中以位置倒数加权：$\frac{1}{\text{\#users}}\sum_{i\in \text{hit}} \frac{1}{p_i}$
 - 适用数据：购买数据，可以包含评分数据
 
 
 ### EASE
 ### 模型介绍
 - [Embarrassingly Shallow Autoencoders for Sparse Data](https://recbole.io/docs/user_guide/model/general/ease.html)
-- 在[SLIM](#admmslim)基础上，去掉了非负约束以及L1正则
+- 在原始[SLIM](#admmslim)目标的基础上，去掉了非负约束以及L1正则
 - 同样提供闭式解（形式简单），方法和[ADMMSLIM](#admmslim)略有不同
 ![](assets/closed_form.jpg) ![](assets/p_hat.jpg)
 
@@ -627,7 +629,7 @@
   - NDCG@100
 - 适用数据：
   - 个性化相关性高，更好推荐长尾item
-  - sparse, implicit, etc.
+  - 稀疏，隐式
   
 
 ## RecVAE
@@ -672,8 +674,8 @@
 - Netflix
 - MSD
 - Metric
-  - R@20
-  - R@50
+  - Recall@20
+  - Recall@50
   - NDCG@100
 - 适用数据：隐式，大型，稀疏数据
 
@@ -774,8 +776,8 @@
 ### 模型介绍
 - [Variational Autoencoders for Collaborative Filtering](https://recbole.io/docs/user_guide/model/general/multidae.html)
 - VAE用作推荐系统的鼻祖论文
-- 用多项式似然$\mathbf{x}_u \mid \mathbf{z}_u \sim \text{Mult}(N_u, \text{MLP}(\mathbf{z}_u))$
-- 分类：
+- 使用多项式似然作为后验：$\mathbf{x}_u \mid \mathbf{z}_u \sim \text{Mult}(N_u, \text{MLP}(\mathbf{z}_u))$
+- 提供两个模型作为推荐的基座：
   - DAE: delta变分分布（类似冲激函数，仅在$g_\phi(\mathbf{x}_u)$处有概率密度）
   - VAE: 参数化高斯近似
 ![](assets/multidae.png)
@@ -886,7 +888,7 @@
 ### 数据集
 - MovieLens(100K, 1M, 10M)
 - Flixster
-  - 同样是电影评分
+  - 与MovieLens相似，同样是电影评分
 - Douban
 - YahooMusic
 - Metric
@@ -900,7 +902,7 @@
 ![](assets/spectralcf.png)
 - 频谱卷积：动态放大/衰减各频率分量，捕捉连通性信息
 - 图傅里叶变换
-  - 涉及拉普拉斯矩阵，特征向量concatenate组成矩阵$U$
+  - 涉及拉普拉斯矩阵，特征向量相连接组成矩阵$U$
   - 图信号$x$经过$U^T$转换为频域信号$\hat{x}$，再经过$U$生成新图信号
 - 卷积核$g_\theta$用于在$U$之前相乘，调节频率分量
   - 优化：卷积核用多项式近似，降低复杂度
@@ -958,7 +960,7 @@
 ## DMF
 ### 模型介绍
 - [Deep Matrix Factorization Models for Recommender Systems](https://recbole.io/docs/user_guide/model/general/dmf.html)
-- MLP分别编码user/item
+- 使用MLP分别编码user和item
 - 损失函数：归一化的交叉熵
   - 除以最大评分，这样同时囊括了显式和隐式的情境
   
